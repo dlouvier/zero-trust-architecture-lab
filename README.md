@@ -2,8 +2,8 @@
 ## PlatformCon 2023
 
 ## TL;DR
-This lab is a follow-up of the presentation blablabla at PLatformCon 2023
-
+This lab is a follow-up of the presentation _Zero Trust Architecture
+Implementing your own Context Aware Proxy_ at [PlatformCon 2023](https://platformcon.com/)
 
 ## Introduction
 
@@ -18,7 +18,7 @@ This guide includes steps with [mkcert](https://github.com/FiloSottile/mkcert)
 - **GitHub Account**
 - **FIDO U2F Compatible Device**
 It can be a physical Fido U2F Key (e.g. Yubico), a [virtual emulator](https://github.com/bulwarkid/virtual-fido) (Linux/Firefox), or a browser with native support (e.g. Chrome in macOS).
-- Auth-chainer
+- [Auth-Chainer](https://github.com/dlouvier/auth-chainer/)
 
 ## Auth-Chainer
 
