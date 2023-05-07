@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: auth-chainer
+  name: auth-chainer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-chainer
+  template:
+    metadata:
+      labels:
+        app: auth-chainer
+    spec:
+      containers:
+      - name: container
+        image: dlouvier/auth-chainer:0.4
+        env:
+          - name: AUTHENTIFICATION_SERVICE_HOST
+            value: "oauth2-proxy"
+          - name: AUTHORISATION_SERVICE_HOST
+            value: "webauthn"
+          - name: SESSION_COOKIE_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: auth-chainer
+                key: session_cookie_secret
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: auth-chainer
+  name: auth-chainer
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: auth-chainer

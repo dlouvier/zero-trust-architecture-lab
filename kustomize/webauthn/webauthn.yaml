@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webauthn
+  name: webauthn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webauthn
+  template:
+    metadata:
+      labels:
+        app: webauthn
+    spec:
+      containers:
+      - name: container
+        image: quiq/webauthn_proxy:0.0.4
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+          name: http
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: config
+          mountPath: /opt/config
+      volumes:
+        - name: config
+          secret:
+            secretName: webauthn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webauthn
+  name: webauthn
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: webauthn

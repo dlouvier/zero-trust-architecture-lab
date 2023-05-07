@@ -1,0 +1,6 @@
+**/certificates/*.crt
+**/certificates/*.key
+**/kustomize/webauthn/*.credentials.yaml
+**/kustomize/oauth2/client*.secret
+**/.vscode
+**/.devcontainer

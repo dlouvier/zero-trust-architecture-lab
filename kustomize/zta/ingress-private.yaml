@@ -1,0 +1,58 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: private
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://auth-chainer.zta-demo.svc.cluster.local/auth" # this path domain should be resolveable by the cluster
+    nginx.ingress.kubernetes.io/auth-signin: "/register" # this domain should be resolvable by client           
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User"
+spec:
+  tls:
+  - secretName: site-certificates
+  rules:
+  - host: private-7f000001.nip.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: echo-server
+            port:
+              name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-sites
+  # This ingress doesn't have any auth annotation,
+  # because otherwise we won't be able to log the user.
+  # note: the '/' path of the app is declared in private ingress.
+spec:
+  tls:
+  - secretName: site-certificates
+  rules:
+  - host: private-7f000001.nip.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: /oauth2
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              name: http
+      - pathType: Prefix
+        path: /register
+        backend:
+          service:
+            name: auth-chainer
+            port:
+              name: http
+      - pathType: Prefix
+        path: /webauthn
+        backend:
+          service:
+            name: webauthn
+            port:
+              name: http
