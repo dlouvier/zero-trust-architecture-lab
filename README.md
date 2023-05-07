@@ -1,10 +1,9 @@
 # Zero Trust Architecture Lab
 ## PlatformCon 2023
 
-
 ## TL;DR
-This lab is a follow up of the presentation blablabla at PLatformCon 2023
-
+This lab is a follow-up of the presentation _Zero Trust Architecture
+Implementing your own Context Aware Proxy_ at [PlatformCon 2023](https://platformcon.com/)
 
 ## Introduction
 
@@ -18,7 +17,10 @@ To provide a valid DNS pointing to our localhost.
 This guide includes steps with [mkcert](https://github.com/FiloSottile/mkcert)
 - **GitHub Account**
 - **FIDO U2F Compatible Device**
-It can be a physical Fido U2F Key (e.g. Yubico), a [virtual emulator](https://github.com/bulwarkid/virtual-fido) (Linux/Firefox), or a browser with native suppport (e.g. Chrome in MacOs).
+It can be a physical Fido U2F Key (e.g. Yubico), a [virtual emulator](https://github.com/bulwarkid/virtual-fido) (Linux/Firefox), or a browser with native support (e.g. Chrome in macOS).
+- [Auth-Chainer](https://github.com/dlouvier/auth-chainer/)
+
+## Auth-Chainer
 
 ## Installation steps
 ### Create a GitHub App
@@ -34,15 +36,10 @@ It can be a physical Fido U2F Key (e.g. Yubico), a [virtual emulator](https://gi
     Enable Device Flow: un-checked
 ```
 
-- Once created, we need to **Generate a Client secrets**.
+- Once created, we need to **Generate a Client Secret**.
+- Take note of the **Client ID** and the **Client Secret**.
 
-- Take note of the **Client ID** and the **Client secrets**.
-
-
-
-
-
-### Install `mkcert` and provision local certiciates
+### Install `mkcert` and provision local certificates
 - Install [mkcert](https://github.com/FiloSottile/mkcert#installation)
 - Install certificates
 
@@ -194,3 +191,27 @@ echo-server-dbc4f7785-lf6vl     1/1     Running   0          34s
 oauth2-proxy-c774549fd-nntdc    1/1     Running   0          34s
 webauthn-5b9655748c-jl49t       1/1     Running   0          34s
 ```
+
+## Usage
+1. Browse to [https://private-7f000001.nip.io/](https://private-7f000001.nip.io/)
+2. Authentificate using your GitHub credentials (remenber to configure correctly the allow GitHub principals).
+3. Next, we'll be prompted in the WebAuthn (Device Authorisation) page. As our device is not currently authorised, the following:
+3.1 Click on Register
+![image](https://user-images.githubusercontent.com/13359249/236694775-cb276c76-4095-4075-9917-25d871e3f5a0.png)
+3.2 If our Browser is compatible, a pop will appear. We need to accept it (this change depending of the browser/device)
+3.3 We need to copy the output in [webauth.credentials.yaml](./kustomize/webauthn/webauth.credentials.yaml) file.
+![image](https://user-images.githubusercontent.com/13359249/236694959-bfea338e-4655-4e10-b709-f3ede9561c5b.png)
+
+Example:
+```
+cookie_session_secrets:
+  - ZILgrCRMYe3QHjr1bxo55pttS0lf6LQANNPOzh6XVA0=
+user_credentials:
+  dlouvier: eyJJRCI6NjkxNDA2NjU5NTI1NzM4MDYxNiwiTmFtZSI6ImRsb3V2aWVyIiwiRGlzcGxheU5hbWUiOiJkbG91dmllciIsIkNyZWRlbnRpYWxzIjpbeyJJRCI6Im9nRllzTlJHTXNaNnlOVkVib0NzUXZnOFAvQmtsRWZYTkR5MG1lSG5vMjgrTTI2bGkva3JodWNlMDZDTDBGYmZpemUvZW5mRVdkL1lMRGIvYmxqQU5WbXBFN2ZjUi93SmdudHl4MFhzZ0N3eXNQYVFTZEFwRXpESnZmVWxQZFhSeFVMWmhFUFF6azdKbW9NUUtMcHJkcyt0ajJNaTRKZ3pmTTlwejBKR2hYeHVMVkY1bE9SelA4NVZjdUJINFE5SnM5OVVYcFlBQ2JXYUdDc21kdjFmbGMvSUhtblh1a2JLSTlzYWdIOXNxOFEzSmVqVUFreHI2ZTRDbUFLYjRvU1M0eUU9IiwiUHVibGljS2V5IjoicFFFQ0F5WWdBU0ZZSUhNL2VQcWMrcVJBRFBqaGdqYUMxNkRCUHI5cUU3bFJ5d0QyUnFrUHRwTW9JbGdnUnQvbUVBMGc5Q1EyS0xPcmN4YXpBNXVIbnlmUXJXcWU2c0NZNTR6WUQ3ND0iLCJBdHRlc3RhdGlvblR5cGUiOiJub25lIiwiVHJhbnNwb3J0IjpudWxsLCJGbGFncyI6eyJVc2VyUHJlc2VudCI6dHJ1ZSwiVXNlclZlcmlmaWVkIjpmYWxzZSwiQmFja3VwRWxpZ2libGUiOmZhbHNlLCJCYWNrdXBTdGF0ZSI6ZmFsc2V9LCJBdXRoZW50aWNhdG9yIjp7IkFBR1VJRCI6IkFBQUFBQUFBQUFBQUFBQUFBQUFBQUE9PSIsIlNpZ25Db3VudCI6MCwiQ2xvbmVXYXJuaW5nIjpmYWxzZSwiQXR0YWNobWVudCI6IiJ9fV19
+```
+
+4. Re-apply the kubernetes resources
+`➜ cd kustomize; kubectl -n zta-demo apply -k .`
+
+5. Browse again to [https://private-7f000001.nip.io/](https://private-7f000001.nip.io/) and now you will need to login.
+6. The page will be opened.
