@@ -215,3 +215,6 @@ user_credentials:
 
 4. Re-apply kubernetes resources
 `➜ cd kustomize; kubectl -n zta-demo apply -k .`
+
+5. Browse again to [https://private-7f000001.nip.io/](https://private-7f000001.nip.io/) and now you will need to login.
+6. The page will be opened.
